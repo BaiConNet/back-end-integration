@@ -1,5 +1,5 @@
-const Pedido = require('../models/Pedido.model');
-const User = require('../models/User.model');
+const Pedido = require('../models/pedido.model');
+const User = require('../models/user.model');
 const { enviarEmail } = require('../utils/email.utils');
 
 exports.criarPedido = async (req, res) => {

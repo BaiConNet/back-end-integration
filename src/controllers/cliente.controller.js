@@ -1,5 +1,5 @@
 
-const User = require('../models/User.model');
+const User = require('../models/user.model');
 
 exports.pegarClientes = async (req, res) => {
   try {

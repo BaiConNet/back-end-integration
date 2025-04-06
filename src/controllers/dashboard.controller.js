@@ -1,7 +1,7 @@
 // src/controllers/dashboard.controller.js
-const Pedido = require('../models/Pedido.model');
-const Produto = require('../models/Produto.model');
-const Loja = require('../models/Loja.model');
+const Pedido = require('../models/pedido.model');
+const Produto = require('../models/produto.model');
+const Loja = require('../models/loja.model');
 
 exports.getResumoDashboard = async (req, res) => {
   try {
