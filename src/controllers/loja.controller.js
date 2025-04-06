@@ -1,4 +1,4 @@
-const Loja = require('../models/Loja.model');
+const Loja = require('../models/loja.model');
 const gerarToken = require('../utils/gerar.token');
 const bcrypt = require('bcryptjs');
 

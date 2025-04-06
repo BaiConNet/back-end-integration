@@ -1,5 +1,5 @@
-const Produto = require('../models/Produto.model');
-const Pedido = require('../models/Pedido.model');
+const Produto = require('../models/produto.model');
+const Pedido = require('../models/pedido.model');
 
 exports.getPainel = async (req, res) => {
   try {
