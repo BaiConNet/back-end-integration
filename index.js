@@ -11,6 +11,9 @@ const produtoRoutes = require('./src/routes/produto.routes');
 const painelRoutes = require('./src/routes/painel.routes');
 const pedidoRoutes = require('./src/routes/pedido.routes');
 const lojaRoutes = require('./src/routes/loja.routes');
+const cartRoutes = require('./src/routes/carrinho.routes');
+const dashboardRoutes = require('./src/routes/dashboard.routes');
+const testePermissaoRoutes = require('./src/routes/testePermissao.routes');
 
 dotenv.config();
 
@@ -31,6 +34,11 @@ app.use('/produtos', produtoRoutes);
 app.use('/painel', painelRoutes);
 app.use('/pedido', pedidoRoutes);
 app.use('/loja', lojaRoutes);
+app.use('/cart', cartRoutes);
+app.use('/dashboard', dashboardRoutes);
+
+// teste
+app.use('/teste', testePermissaoRoutes);
 
 app.get('/', (req, res) => {
   res.send('API do bairro está rodando 🚀');

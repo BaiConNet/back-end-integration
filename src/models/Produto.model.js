@@ -10,4 +10,4 @@ const produtoSchema = new mongoose.Schema({
   dono: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
-module.exports = mongoose.model('Produto', produtoSchema);
+module.exports = mongoose.models.Produto || mongoose.model('Produto', produtoSchema);

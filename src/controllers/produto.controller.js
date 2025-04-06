@@ -19,3 +19,23 @@ exports.listarProdutos = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.atualizarProduto = async (req, res) => {
+  try {
+    const produto = await Produto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!produto) return res.status(404).json({ message: 'Produto não encontrado' });
+    res.json(produto);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deletarProduto = async (req, res) => {
+  try {
+    const produto = await Produto.findByIdAndDelete(req.params.id);
+    if (!produto) return res.status(404).json({ message: 'Produto não encontrado' });
+    res.json({ message: 'Produto deletado com sucesso' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
