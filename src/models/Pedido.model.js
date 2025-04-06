@@ -1,17 +1,44 @@
 const mongoose = require('mongoose');
 
-const PedidoSchema = new mongoose.Schema({
-  clienteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente' },
-  lojaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Loja' },
+const pedidoSchema = new mongoose.Schema({
+  cliente: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cliente',
+    required: true
+  },
+  loja: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Loja',
+    required: true
+  },
   itens: [
     {
-      produtoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Produto' },
-      quantidade: Number
+      produto: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Produto',
+        required: true
+      },
+      quantidade: {
+        type: Number,
+        required: true,
+        default: 1
+      }
     }
   ],
-  tipo: { type: String, enum: ['pedido', 'orcamento'] },
-  status: { type: String, enum: ['pendente', 'aceito', 'rejeitado', 'concluido'], default: 'pendente' },
-  criadoEm: { type: Date, default: Date.now }
+  total: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['pendente', 'em andamento', 'concluído', 'cancelado'],
+    default: 'pendente'
+  },
+  criadoEm: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model('Pedido', PedidoSchema);
+module.exports = mongoose.models.Pedido || mongoose.model('Pedido', pedidoSchema);
+
