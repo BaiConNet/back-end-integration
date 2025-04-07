@@ -2,8 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
 const cors = require('cors');
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+const { swaggerUi, swaggerSpec } = require('./swagger.config');
 
 const conectarDB = require('./config/db');
 const authRoutes = require('./src/routes/auth.routes');
@@ -28,25 +27,6 @@ app.use(express.json());
 // Conexão com banco de dados
 conectarDB();
 
-// Swagger config
-const swaggerSpec = swaggerJsdoc({
-  swaggerDefinition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'API do Bairro',
-      version: '1.0.0',
-      description: 'Documentação da API para o sistema de comércio local',
-    },
-    servers: [
-      {
-        url: 'http://localhost:3000', // depois trocamos para domínio real
-      },
-    ],
-  },
-  apis: ['./src/routes/*.js'], // escaneia seus arquivos de rota
-});
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 // Rotas
 app.use('/auth', authRoutes);
 app.use('/cliente', clienteRoutes);
@@ -57,6 +37,9 @@ app.use('/loja', lojaRoutes);
 app.use('/cart', cartRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/teste', testePermissaoRoutes);
+
+// swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => {
   res.send('API do bairro está rodando 🚀');

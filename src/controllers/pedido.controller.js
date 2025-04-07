@@ -1,24 +1,30 @@
+const Produto = require('../models/produto.model');
 const Pedido = require('../models/pedido.model');
 const User = require('../models/user.model');
 const { enviarEmail } = require('../utils/email.utils');
 
 exports.criarPedido = async (req, res) => {
   try {
+    let total = 0;
+
+    const itensDetalhados = await Promise.all(req.body.itens.map(async (item) => {
+      const produto = await Produto.findById(item.produto);
+      if (!produto) throw new Error(`Produto com ID ${item.produto} não encontrado`);
+      total += produto.preco * item.quantidade;
+      return { produto: item.produto, quantidade: item.quantidade };
+    }));
+
     const novoPedido = new Pedido({
-      clienteId: req.user.id,
-      lojaId: req.body.lojaId,
-      itens: req.body.itens,
-      tipo: req.body.tipo
+      cliente: req.user.id,
+      loja: req.body.loja,
+      itens: itensDetalhados,
+      total
     });
 
     await novoPedido.save();
     await novoPedido.populate('itens.produto');
 
     const cliente = await User.findById(req.user.id);
-    const total = novoPedido.itens.reduce(
-      (acc, item) => acc + item.produto.preco * item.quantidade,
-      0
-    );
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
@@ -60,9 +66,9 @@ exports.atualizarStatus = async (req, res) => {
       req.params.id,
       { status: req.body.status },
       { new: true }
-    ).populate('clienteId');
+    ).populate('cliente');
 
-    if (pedido?.clienteId?.email) {
+    if (pedido?.cliente?.email) {
       const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #3498db;">📦 Atualização do Pedido</h2>
@@ -76,7 +82,7 @@ exports.atualizarStatus = async (req, res) => {
       `;
 
       await enviarEmail({
-        to: pedido.clienteId.email,
+        to: pedido.cliente.email,
         subject: '📦 Atualização do seu pedido',
         html
       });
