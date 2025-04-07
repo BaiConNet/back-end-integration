@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const gerarToken = require('../utils/gerar.token');
 const bcrypt = require('bcryptjs');
 
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   const { nome, email, senha, tipo } = req.body;
   try {
     const userExistente = await User.findOne({ email });
@@ -18,7 +18,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   const { email, senha } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -31,4 +31,9 @@ exports.login = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+module.exports = {
+  register,
+  login,
 };

@@ -4,7 +4,7 @@ const LojaSchema = new mongoose.Schema({
   nome: String,
   email: String,
   senha: String,
-  tipo: String, // Ex: oficina, pizzaria, mercearia, etc.
+  tipo: String,
   dono: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Loja', // ou 'Usuario' se você tiver um model separado para os donos
