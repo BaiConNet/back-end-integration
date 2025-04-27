@@ -1,26 +1,25 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-  nome: {
+const bloqueioSchema = new mongoose.Schema({
+  barbeiro: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  data: {
+    type: Date,
+    required: true,
+  },
+  horaInicio: {
     type: String,
     required: true,
   },
-  telefone: {
+  horaFim: {
     type: String,
     required: true,
   },
-  email: {
+  motivo: {
     type: String,
-    required: true,
-    unique: true,
-  },
-  senha: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ['CLIENTE', 'BARBEIRO', 'ADMIN'],
     required: true,
   },
   criadoEm: {
@@ -29,4 +28,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Bloqueio', bloqueioSchema);
