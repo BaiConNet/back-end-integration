@@ -76,7 +76,7 @@ const { autenticar, verificarPermissao } = require('../middlewares/auth.middlewa
  *       500:
  *         description: Erro ao criar serviço
  */
-router.post('/', autenticar, verificarPermissao(['ADMIN']), servicoController.criarServico);
+router.post('/', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), servicoController.criarServico);
 
 /**
  * @swagger
@@ -135,7 +135,7 @@ router.get('/', autenticar, servicoController.listarServicos);
  *       500:
  *         description: Erro ao editar serviço
  */
-router.put('/:servicoId', autenticar, verificarPermissao(['ADMIN']), servicoController.editarServico);
+router.put('/:servicoId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), servicoController.editarServico);
 
 /**
  * @swagger
@@ -160,6 +160,6 @@ router.put('/:servicoId', autenticar, verificarPermissao(['ADMIN']), servicoCont
  *       500:
  *         description: Erro ao excluir serviço
  */
-router.delete('/:servicoId', autenticar, verificarPermissao(['ADMIN']), servicoController.excluirServico);
+router.delete('/:servicoId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), servicoController.excluirServico);
 
 module.exports = router;
