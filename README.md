@@ -17,7 +17,7 @@ API REST para gestão de barbearias, desenvolvida em **Node.js** com **Express**
 ---
 
 ## 📂 Estrutura de Pastas
-
+```
 src/
 ├── controllers/ # Lógica de negócio
 ├── models/ # Definições das collections do MongoDB
@@ -26,7 +26,7 @@ src/
 ├── utils/ # Funções utilitárias
 ├── config/ # Configurações (DB, e-mail, etc.)
 └── app.js # Configuração principal do servidor
-
+```
 ---
 
 ## ⚙️ Instalação e Execução
