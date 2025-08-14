@@ -1,6 +1,17 @@
 # 💈 API Barbearia
 
-API REST para gestão de barbearias, desenvolvida em **Node.js** com **Express** e **MongoDB**, oferecendo funcionalidades como agendamentos, bloqueio de horários, gerenciamento de serviços, painel do administrador, autenticação JWT e integração futura com WhatsApp Business API.
+API REST para gestão de barbearias, desenvolvida em **Node.js** com **Express** e **MongoDB**, oferecendo funcionalidades como:
+- 📅 Agendamento de horários
+
+- ⛔ Bloqueio de horários
+
+- ✂️ Gerenciamento de serviços
+
+- 📊 Painel administrativo
+
+- 🔐 Autenticação com JWT
+
+- 💬 Integração futura com WhatsApp Business API
 
 ---
 
