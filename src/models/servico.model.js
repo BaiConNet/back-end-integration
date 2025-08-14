@@ -13,6 +13,11 @@ const servicoSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  usuario: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   criadoEm: {
     type: Date,
     default: Date.now,

@@ -51,12 +51,12 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { _id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    res.json({ token, user: { id: user._id, nome: user.nome, role: user.role } });
+    res.json({ token, user: { _id: user._id, nome: user.nome, role: user.role } });
   } catch (err) {
     console.error('Erro no login:', err);
     res.status(500).json({ error: 'Erro no login' });
