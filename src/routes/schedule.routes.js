@@ -48,7 +48,7 @@ const { autenticar, verificarPermissao } = require('../middlewares/auth.middlewa
  *       500:
  *         description: Erro interno do servidor
  */
-router.post('/', autenticar, scheduleController.criarHorario);
+router.post('/', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), scheduleController.criarHorario);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.get('/barbeiro/:barbeiroId', autenticar, scheduleController.listarHorario
  *       500:
  *         description: Erro interno do servidor
  */
-router.put('/:horarioId', autenticar, scheduleController.editarHorario);
+router.put('/:horarioId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), scheduleController.editarHorario);
 
 /**
  * @swagger
@@ -139,6 +139,6 @@ router.put('/:horarioId', autenticar, scheduleController.editarHorario);
  *       500:
  *         description: Erro interno do servidor
  */
-router.delete('/:horarioId', autenticar, scheduleController.excluirHorario);
+router.delete('/:horarioId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), scheduleController.excluirHorario);
 
 module.exports = router;
