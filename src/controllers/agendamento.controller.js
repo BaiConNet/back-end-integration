@@ -1,81 +1,63 @@
 const Agendamento = require('../models/agendamento.model');
+const Schedule = require('../models/schedule.model');
 const Bloqueio = require('../models/bloqueio.model');
 const Servico = require('../models/servico.model');
-const User = require('../models/user.model');
 
+// Criar agendamento
 exports.criarAgendamento = async (req, res) => {
   try {
-    const { cliente, barbeiro, servico, data, horaInicio, horaFim } = req.body;
+    const { cliente, barbeiro, horarioId, servico } = req.body;
+
+    const horario = await Schedule.findById(horarioId);
+    if (!horario || !horario.isDisponivel) {
+      return res.status(400).json({ message: 'Horário não disponível.' });
+    }
+
+    const horaInicioObj = new Date(`${horario.data}T${horario.horaInicio}:00`);
+    const horaFimObj = new Date(`${horario.data}T${horario.horaFim}:00`);
+    if (horaInicioObj >= horaFimObj) {
+      return res.status(400).json({ message: 'Horário inválido.' });
+    }
 
     const bloqueio = await Bloqueio.findOne({
       barbeiro,
-      data,
-      $or: [
-        { horaInicio: { $lte: horaFim }, horaFim: { $gte: horaInicio } },
-      ],
+      data: horario.data,
+      horaInicio: horario.horaInicio,
+      horaFim: horario.horaFim
     });
-    
-    if (bloqueio) {
-      return res.status(400).json({ message: 'Horário bloqueado para esse barbeiro.' });
-    }
+    if (bloqueio) return res.status(400).json({ message: 'Horário bloqueado pelo barbeiro.' });
 
-    const agendamentoExistente = await Agendamento.findOne({
-      barbeiro,
-      data,
-      $or: [
-        { horaInicio: { $lte: horaFim }, horaFim: { $gte: horaInicio } },
-      ],
-    });
-
-    if (agendamentoExistente) {
-      return res.status(400).json({ message: 'O barbeiro já tem um agendamento nesse horário.' });
-    }
+    const agendamentoExistente = await Agendamento.findOne({ horario: horarioId });
+    if (agendamentoExistente) return res.status(400).json({ message: 'Horário já agendado.' });
 
     const servicoExistente = await Servico.findById(servico);
-    if (!servicoExistente) {
-      return res.status(404).json({ message: 'Serviço não encontrado.' });
-    }
+    if (!servicoExistente) return res.status(404).json({ message: 'Serviço não encontrado.' });
 
-    const duracaoServico = servicoExistente.duracao;
-    const horaInicioObj = new Date(`1970-01-01T${horaInicio}:00`);
-    const horaFimObj = new Date(`1970-01-01T${horaFim}:00`);
-    const duracaoAgendamento = (horaFimObj - horaInicioObj) / 60000;
-
-    if (duracaoAgendamento < 30) {
-      return res.status(400).json({ message: 'A duração mínima do agendamento é de 30 minutos.' });
-    }
-
-    const novoAgendamento = new Agendamento({
-      cliente,
-      barbeiro,
-      servico,
-      data,
-      horaInicio,
-      horaFim,
-    });
-
+    const novoAgendamento = new Agendamento({ cliente, barbeiro, horario: horarioId, servico });
     await novoAgendamento.save();
-    return res.status(201).json({ message: 'Agendamento criado com sucesso!', novoAgendamento });
+
+    horario.isDisponivel = false;
+    await horario.save();
+
+    res.status(201).json({ message: 'Agendamento criado com sucesso!', novoAgendamento });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+    res.status(500).json({ message: 'Erro ao criar agendamento.' });
   }
 };
 
+// Cancelar agendamento
 exports.cancelarAgendamento = async (req, res) => {
   try {
     const { agendamentoId } = req.params;
-    const agendamento = await Agendamento.findById(agendamentoId);
+    const agendamento = await Agendamento.findById(agendamentoId).populate('horario');
 
-    if (!agendamento) {
-      return res.status(404).json({ message: 'Agendamento não encontrado.' });
-    }
+    if (!agendamento) return res.status(404).json({ message: 'Agendamento não encontrado.' });
 
     const horaCancelamento = new Date();
-    const horaAgendamento = new Date(agendamento.data);
-    horaAgendamento.setHours(parseInt(agendamento.horaInicio.split(':')[0]), parseInt(agendamento.horaInicio.split(':')[1]));
-
+    const horaAgendamento = new Date(`${agendamento.horario.data}T${agendamento.horario.horaInicio}:00`);
     const tempoRestante = (horaAgendamento - horaCancelamento) / 60000;
+
     if (tempoRestante < 120) {
       return res.status(400).json({ message: 'Cancelamento deve ser feito com no mínimo 2 horas de antecedência.' });
     }
@@ -83,9 +65,12 @@ exports.cancelarAgendamento = async (req, res) => {
     agendamento.status = 'CANCELADO';
     await agendamento.save();
 
-    return res.status(200).json({ message: 'Agendamento cancelado com sucesso.' });
+    agendamento.horario.isDisponivel = true;
+    await agendamento.horario.save();
+
+    res.status(200).json({ message: 'Agendamento cancelado com sucesso.' });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+    res.status(500).json({ message: 'Erro ao cancelar agendamento.' });
   }
 };

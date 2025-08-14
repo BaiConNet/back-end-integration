@@ -16,17 +16,10 @@ const agendamentoSchema = new mongoose.Schema({
     ref: 'Servico',
     required: true,
   },
-  data: {
-    type: Date,
-    required: true,
-  },
-  horaInicio: {
-    type: String, // ex: "14:30"
-    required: true,
-  },
-  horaFim: {
-    type: String, // ex: "15:00"
-    required: true,
+  horario: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Schedule',
+    required: true, // referência ao horário criado pelo barbeiro
   },
   status: {
     type: String,

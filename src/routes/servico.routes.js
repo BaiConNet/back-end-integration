@@ -52,7 +52,7 @@ const { autenticar, verificarPermissao } = require('../middlewares/auth.middlewa
 
 /**
  * @swagger
- * /servicos:
+ * /servico:
  *   post:
  *     summary: Criar um novo serviço
  *     tags: [Serviços]
@@ -80,7 +80,7 @@ router.post('/', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), servicoC
 
 /**
  * @swagger
- * /servicos:
+ * /servico:
  *   get:
  *     summary: Listar todos os serviços
  *     tags: [Serviços]
@@ -104,7 +104,7 @@ router.get('/', autenticar, servicoController.listarServicos);
 
 /**
  * @swagger
- * /servicos/{servicoId}:
+ * /servico/{servicoId}:
  *   put:
  *     summary: Editar um serviço
  *     tags: [Serviços]
@@ -139,7 +139,7 @@ router.put('/:servicoId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']),
 
 /**
  * @swagger
- * /servicos/{servicoId}:
+ * /servico/{servicoId}:
  *   delete:
  *     summary: Excluir um serviço
  *     tags: [Serviços]

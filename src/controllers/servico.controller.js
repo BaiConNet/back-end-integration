@@ -29,10 +29,10 @@ exports.listarServicos = async (req, res) => {
     
     const servicos = await Servico.find({ usuario: req.user._id });
     if (!servicos.length) {
-      return res.status(404).json({ message: 'Nenhum serviço encontrado.' });
+      return res.status(200).json({ message: 'Nenhum serviço encontrado.' });
     }
 
-    res.status(200).json(servicos);
+    res.status(201).json(servicos);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao listar serviços.' });
@@ -68,12 +68,12 @@ exports.excluirServico = async (req, res) => {
   try {
     const { servicoId } = req.params;
 
-    const servico = await Servico.findById(servicoId);
+    const servico = await Servico.findOne({ _id: servicoId, usuario: req.user._id });
     if (!servico) {
       return res.status(404).json({ message: 'Serviço não encontrado.' });
     }
 
-    await servico.remove();
+    await Servico.deleteOne({ _id: servicoId });
 
     res.status(200).json({ message: 'Serviço excluído com sucesso.' });
   } catch (error) {

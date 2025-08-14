@@ -10,6 +10,7 @@ const servicoRoutes = require('./src/routes/servico.routes');
 const bloqueioRoutes = require('./src/routes/bloqueio.routes');
 const agendamentoRoutes = require('./src/routes/agendamento.routes');
 const adminRoutes = require('./src/routes/admin.routes');
+const scheduleRoutes = require('./src/routes/schedule.routes');
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use('/user', userRoutes);
 app.use('/servico', servicoRoutes);
 app.use('/bloqueio', bloqueioRoutes);
 app.use('/agendamento', agendamentoRoutes);
+app.use('/schedule', scheduleRoutes)
 app.use('/admin', adminRoutes)
 
 // swagger
