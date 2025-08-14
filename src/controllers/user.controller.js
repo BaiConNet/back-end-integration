@@ -62,3 +62,27 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Erro no login' });
   }
 };
+
+exports.getUser = async (req, res) => {
+  try {
+    const { id, email } = req.query;
+
+    let user;
+    if (id) {
+      user = await User.findById(id).select('-senha'); // não retorna senha
+    } else if (email) {
+      user = await User.findOne({ email }).select('-senha');
+    } else {
+      return res.status(400).json({ error: 'Informe id ou email para buscar o usuário' });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error('Erro ao buscar usuário:', err);
+    res.status(500).json({ error: 'Erro ao buscar usuário' });
+  }
+};
