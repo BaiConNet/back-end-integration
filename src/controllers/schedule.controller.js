@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Schedule = require('../models/schedule.model');
 const Bloqueio = require('../models/bloqueio.model');
 
@@ -77,17 +78,23 @@ exports.editarHorario = async (req, res) => {
 exports.excluirHorario = async (req, res) => {
   try {
     const { horarioId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(horarioId)) {
+      return res.status(400).json({ message: 'ID de horário inválido.' });
+    }
+
     const horario = await Schedule.findById(horarioId);
     if (!horario) return res.status(404).json({ message: 'Horário não encontrado.' });
 
+    // Verificar permissão
     if (horario.barbeiro.toString() !== req.user._id.toString() && req.user.role !== 'ADMIN') {
       return res.status(403).json({ message: 'Ação não permitida.' });
     }
 
-    await horario.remove();
+    await Schedule.findByIdAndDelete(horarioId);
     res.status(200).json({ message: 'Horário excluído com sucesso.' });
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao excluir horário:', error);
     res.status(500).json({ message: 'Erro ao excluir horário.' });
   }
 };
