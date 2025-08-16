@@ -128,4 +128,6 @@ router.post('/', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), bloqueio
  */
 router.get('/:barbeiroId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), bloqueioController.listarBloqueios);
 
+router.delete('/:bloqueioId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), bloqueioController.excluirBloqueio);
+
 module.exports = router;
