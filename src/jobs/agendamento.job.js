@@ -11,7 +11,14 @@ cron.schedule('*/5 * * * *', async () => {
     }).populate('horario');
 
     for (const agendamento of agendamentos) {
-      const horaFimObj = new Date(`${agendamento.horario.data}T${agendamento.horario.horaFim}:00`);
+      if (!agendamento.horario) continue; // pular se horário não existir
+
+      // Criar Date do horário final corretamente
+      const [hora, minuto] = agendamento.horario.horaFim.split(':');
+      const horaFimObj = new Date(agendamento.horario.data);
+      horaFimObj.setHours(parseInt(hora), parseInt(minuto), 0, 0);
+
+      // Comparar com horário atual
       if (horaFimObj <= agora) {
         agendamento.status = 'CONCLUIDO';
         await agendamento.save();
