@@ -20,81 +20,40 @@ const { autenticar, verificarPermissao } = require('../middlewares/auth.middlewa
  *         agendamentos:
  *           type: array
  *           items:
- *             type: object
- *             properties:
- *               _id:
- *                 type: string
- *               cliente:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   nome:
- *                     type: string
- *                   email:
- *                     type: string
- *               barbeiro:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   nome:
- *                     type: string
- *                   email:
- *                     type: string
- *               servico:
- *                 type: string
- *               data:
- *                 type: string
- *               horaInicio:
- *                 type: string
- *               horaFim:
- *                 type: string
- *               status:
- *                 type: string
+ *             $ref: '#/components/schemas/Agendamento'
  *         bloqueios:
  *           type: array
  *           items:
- *             type: object
- *             properties:
- *               _id:
- *                 type: string
- *               barbeiro:
- *                 type: string
- *               data:
- *                 type: string
- *               horaInicio:
- *                 type: string
- *               horaFim:
- *                 type: string
- *               motivo:
- *                 type: string
+ *             $ref: '#/components/schemas/Bloqueio'
  *         servicos:
  *           type: array
  *           items:
- *             type: object
- *             properties:
- *               _id:
- *                 type: string
- *               nome:
- *                 type: string
- *               duracao:
- *                 type: number
- *               preco:
- *                 type: number
+ *             $ref: '#/components/schemas/Servico'
+ *         horarios:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Schedule'
+ *         clientes:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User'
+ *         barbeiros:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/User'
  */
 
 /**
  * @swagger
  * /admin/painel:
  *   get:
- *     summary: Obter dados completos do painel administrativo
+ *     summary: Painel geral do admin
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dados do painel carregados com sucesso
+ *         description: Painel carregado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -104,7 +63,7 @@ const { autenticar, verificarPermissao } = require('../middlewares/auth.middlewa
  *         content:
  *           application/json:
  *             example:
- *               message: "Erro ao carregar painel."
+ *               message: "Erro ao carregar painel admin."
  */
 router.get('/painel', autenticar, verificarPermissao(['ADMIN']), adminController.painelAdmin);
 
