@@ -13,6 +13,8 @@ API REST para gestão de barbearias, desenvolvida em **Node.js** com **Express**
 
 - 💬 Integração futura com WhatsApp Business API
 
+- ✅ Controle de status de agendamento (AGENDADO, CANCELADO, CONCLUIDO, manual ou automático)
+
 ---
 
 ## 🚀 Tecnologias Utilizadas
@@ -24,6 +26,7 @@ API REST para gestão de barbearias, desenvolvida em **Node.js** com **Express**
 - **Nodemailer** para envio de e-mails
 - **WhatsApp Business API** (integração futura)
 - **Bcrypt** para hash de senhas
+- **Node-cron** (para jobs automáticos de atualização de status)
 
 ---
 
@@ -31,6 +34,7 @@ API REST para gestão de barbearias, desenvolvida em **Node.js** com **Express**
 ```
 src/
 ├── controllers/ # Lógica de negócio
+├── jobs/
 ├── models/ # Definições das collections do MongoDB
 ├── routes/ # Rotas da API
 ├── middlewares/ # Middlewares de autenticação e permissões
@@ -110,6 +114,16 @@ WHATSAPP_ACCESS_TOKEN=seu_token
 
     - **Serviços:** /servicos
 
+    - **Horários (Schedule)** /schedule – criar, listar, editar, excluir horários
+
+        - Somente **BARBEIRO** e **ADMIN** podem criar
+
+        - Horários são vinculados ao barbeiro
+
+        - Apenas o dono do horário ou ADMIN podem editar/excluir
+
+        - Horários são utilizados para agendamento de clientes
+
     - **Agendamentos:** /agendamentos
 
     - **Bloqueios:** /bloqueios
@@ -120,14 +134,20 @@ WHATSAPP_ACCESS_TOKEN=seu_token
 
 ## 📌 Regras de Negócio Implementadas
 
-- **Apenas BARBEIRO e ADMIN podem criar bloqueios.**
+- **Permissões baseadas em roles: CLIENTE, BARBEIRO, ADMIN**
 
-- **Apenas ADMIN pode acessar o painel administrativo.**
+- **Apenas BARBEIRO e ADMIN podem criar bloqueios e horários**
 
-- **Agendamentos não podem ser feitos em horários bloqueados.**
+- **Horários (Schedule) criados por um barbeiro são exclusivos dele**
 
-- **Um barbeiro não pode criar dois bloqueios no mesmo horário.**
+- **Agendamentos só podem ser feitos em horários disponíveis e não bloqueados**
 
-- **JWT é usado para autenticação em todas as rotas protegidas.**
+- **Atualização de status de agendamento pode ser manual (barbeiro) ou automática via job**
 
-- **Permissões baseadas em roles: CLIENTE, BARBEIRO, ADMIN.**
+- **Cancelamento de agendamento deve respeitar regra de antecedência mínima**
+
+- **JWT é usado em todas as rotas protegidas**
+
+- **Painel administrativo acessível apenas para ADMIN**
+
+- **Horários bloqueados atualizam automaticamente o isDisponivel do Schedule**
