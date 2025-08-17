@@ -176,4 +176,71 @@ router.post('/', autenticar, agendamentoController.criarAgendamento);
  */
 router.put('/:agendamentoId/cancelar', autenticar, agendamentoController.cancelarAgendamento);
 
+/**
+ * @swagger
+ * /agendamento/{id}/status:
+ *   patch:
+ *     summary: Atualizar status de um agendamento (manual)
+ *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do agendamento
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [AGENDADO, CANCELADO, CONCLUIDO]
+ *                 description: Novo status do agendamento
+ *             example:
+ *               status: CONCLUIDO
+ *     responses:
+ *       200:
+ *         description: Status atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Status atualizado para CONCLUIDO"
+ *               agendamento:
+ *                 _id: "68a2040b354291ebd36ca458"
+ *                 cliente: "689e2944f3fdcc63219e17d9"
+ *                 barbeiro: "689e2931f3fdcc63219e17d6"
+ *                 servico: "68a203f91f6ab36da5bac471"
+ *                 horario: "68a1fd421f6ab36da5bac459"
+ *                 status: "CONCLUIDO"
+ *                 criadoEm: "2025-08-17T16:32:11.640Z"
+ *                 __v: 0
+ *       400:
+ *         description: Status inválido
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Status inválido."
+ *       404:
+ *         description: Agendamento não encontrado
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Agendamento não encontrado."
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Erro ao atualizar status."
+ */
+router.patch('/:id/status', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), agendamentoController.atualizarStatus);
+
 module.exports = router;
