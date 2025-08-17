@@ -74,3 +74,28 @@ exports.cancelarAgendamento = async (req, res) => {
     res.status(500).json({ message: 'Erro ao cancelar agendamento.' });
   }
 };
+
+// Atualizar agendamentos
+exports.atualizarStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    if (!['AGENDADO', 'CANCELADO', 'CONCLUIDO'].includes(status)) {
+      return res.status(400).json({ message: 'Status inválido.' });
+    }
+
+    const agendamento = await Agendamento.findById(id);
+    if (!agendamento) {
+      return res.status(404).json({ message: 'Agendamento não encontrado.' });
+    }
+
+    agendamento.status = status;
+    await agendamento.save();
+
+    res.json({ message: `Status atualizado para ${status}`, agendamento });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao atualizar status.' });
+  }
+};

@@ -128,6 +128,56 @@ router.post('/', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), bloqueio
  */
 router.get('/:barbeiroId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), bloqueioController.listarBloqueios);
 
+/**
+ * @swagger
+ * /bloqueios/{bloqueioId}:
+ *   delete:
+ *     summary: Excluir bloqueio
+ *     description: Remove um bloqueio existente e libera novamente os horários (Schedules) associados, tornando-os disponíveis.
+ *     tags:
+ *       - Bloqueios
+ *     security:
+ *       - bearerAuth: []   # Usa autenticação JWT
+ *     parameters:
+ *       - in: path
+ *         name: bloqueioId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do bloqueio a ser removido
+ *     responses:
+ *       200:
+ *         description: Bloqueio excluído com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Bloqueio excluído com sucesso!
+ *       404:
+ *         description: Bloqueio não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Bloqueio não encontrado.
+ *       500:
+ *         description: Erro no servidor ao excluir bloqueio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Erro ao excluir bloqueio.
+ */
+
 router.delete('/:bloqueioId', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), bloqueioController.excluirBloqueio);
 
 module.exports = router;

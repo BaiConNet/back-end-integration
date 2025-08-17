@@ -59,10 +59,10 @@ exports.listarBloqueios = async (req, res) => {
     const bloqueios = await Bloqueio.find({ barbeiro: req.params.barbeiroId });
 
     if (!bloqueios.length) {
-      return res.status(404).json({ message: 'Nenhum bloqueio encontrado.' });
+      return res.status(200).json({ message: 'Nenhum bloqueio encontrado.' });
     }
 
-    res.status(200).json(bloqueios);
+    res.status(201).json(bloqueios);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao listar bloqueios.' });

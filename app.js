@@ -39,6 +39,9 @@ app.get('/', (req, res) => {
   res.send('API do bairro está rodando 🚀');
 });
 
+// Carregar jobs
+require('./src/jobs/agendamento.job');
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Algo deu errado!', error: err.message });
