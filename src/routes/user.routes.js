@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getUser } = require('../controllers/user.controller');
+const { autenticar, verificarPermissao } = require('../middlewares/auth.middleware');
+const userController = require('../controllers/user.controller');
 
 /**
  * @swagger
@@ -76,7 +77,7 @@ const { register, login, getUser } = require('../controllers/user.controller');
  *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  */
 
-router.post('/register', register);
+router.post('/register', userController.register);
 
 /**
  * @swagger
@@ -103,7 +104,7 @@ router.post('/register', register);
  *         description: Erro interno
  */
 
-router.post('/login', login);
+router.post('/login', userController.login);
 
 /**
  * @swagger
@@ -130,7 +131,7 @@ router.post('/login', login);
  *         description: Erro interno
  */
 
-router.get('/search', getUser);
+router.get('/search', autenticar, verificarPermissao(['ADMIN']), userController.getUser);
 
 /**
  * @swagger
@@ -163,5 +164,7 @@ router.get('/search', getUser);
  *       500:
  *         description: Erro interno
  */
+
+router.get('/me', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), userController.getMe);
 
 module.exports = router;

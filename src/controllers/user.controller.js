@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token, user: { _id: user._id, nome: user.nome, role: user.role } });
+    res.json({ token, user: { _id: user._id, nome: user.nome, email: user.email, telefone: user.telefone, role: user.role } });
   } catch (err) {
     console.error('Erro no login:', err);
     res.status(500).json({ error: 'Erro no login' });
@@ -84,5 +84,15 @@ exports.getUser = async (req, res) => {
   } catch (err) {
     console.error('Erro ao buscar usuário:', err);
     res.status(500).json({ error: 'Erro ao buscar usuário' });
+  }
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    const userId = req.user.id; // vem do token decodificado
+    const user = await User.findById(userId).select('-senha');
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar perfil' });
   }
 };
