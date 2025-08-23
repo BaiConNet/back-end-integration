@@ -11,6 +11,7 @@ const bloqueioRoutes = require('./src/routes/bloqueio.routes');
 const agendamentoRoutes = require('./src/routes/agendamento.routes');
 const adminRoutes = require('./src/routes/admin.routes');
 const scheduleRoutes = require('./src/routes/schedule.routes');
+const forgotRoutes = require('./src/routes/forgot-password.routes')
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/bloqueio', bloqueioRoutes);
 app.use('/agendamento', agendamentoRoutes);
 app.use('/schedule', scheduleRoutes)
 app.use('/admin', adminRoutes)
+app.use('/', forgotRoutes)
 
 // swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
