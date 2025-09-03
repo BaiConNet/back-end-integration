@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const { swaggerUi, swaggerSpec } = require('./swagger.config');
 
 const conectarDB = require('./config/db');
@@ -60,11 +61,25 @@ app.get('/', (req, res) => {
 // Carregar jobs
 require('./src/jobs/agendamento.job');
 
-app.get("/health", (req, res) => {
+app.get("/health", async (req, res) => {
+  let dbStatus = "disconnected";
+
+  if (mongoose.connection.readyState === 1) {
+    dbStatus = "connected";
+  } else if (mongoose.connection.readyState === 2) {
+    dbStatus = "connecting";
+  } else if (mongoose.connection.readyState === 3) {
+    dbStatus = "disconnecting";
+  }
+
   res.status(200).json({
     status: "ok",
+    service: "api-barbeiro",
+    env: process.env.NODE_ENV || "development",
     uptime: process.uptime(),
-    timestamp: Date.now()
+    timestamp: new Date().toISOString(),
+    dbStatus, // mostra status do banco
+    memoryUsage: process.memoryUsage(),
   });
 });
 
