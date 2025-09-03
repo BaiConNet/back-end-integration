@@ -19,8 +19,24 @@ const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(cors());
 app.use(express.json());
+const allowedOrigins = [
+  "http://localhost:5173/",
+  "https://meu-frontend-staging.vercel.app",
+  "http://localhost:3000" // para desenvolvimento
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 // Conexão com banco de dados
 conectarDB();
@@ -43,6 +59,14 @@ app.get('/', (req, res) => {
 
 // Carregar jobs
 require('./src/jobs/agendamento.job');
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: Date.now()
+  });
+});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
