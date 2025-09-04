@@ -42,12 +42,12 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: 'Email ou senha inválidos' });
+      return res.status(400).json({ message: 'Email ou senha inválidos' });
     }
 
     const senhaValida = await bcrypt.compare(senha, user.senha);
     if (!senhaValida) {
-      return res.status(400).json({ error: 'Email ou senha inválidos' });
+      return res.status(400).json({ message: 'Email ou senha inválidos' });
     }
 
     const token = jwt.sign(
