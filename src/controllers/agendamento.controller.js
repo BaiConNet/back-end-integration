@@ -99,3 +99,54 @@ exports.atualizarStatus = async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar status.' });
   }
 };
+
+// Listar agendamentos
+exports.listarAgendamentos = async (req, res) => {
+  try {
+    let filtro = {};
+
+    if (req.user.role === 'BARBEIRO') {
+      filtro.barbeiro = req.user._id;
+    }
+
+    const agendamentos = await Agendamento.find(filtro)
+      .populate('cliente', 'nome email')
+      .populate('barbeiro', 'nome email')
+      .populate('servico', 'nome preco duracao')
+      .populate('horario');
+
+    res.status(200).json(agendamentos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao listar agendamentos.' });
+  }
+};
+
+// Buscar agendamento por ID
+exports.buscarAgendamentoPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const agendamento = await Agendamento.findById(id)
+      .populate('cliente', 'nome email')
+      .populate('barbeiro', 'nome email')
+      .populate('servico', 'nome preco duracao')
+      .populate('horario');
+
+    if (!agendamento) {
+      return res.status(404).json({ message: 'Agendamento não encontrado.' });
+    }
+
+    // Regras de acesso
+    if (
+      req.user.role === 'BARBEIRO' && agendamento.barbeiro._id.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: 'Acesso negado a este agendamento.' });
+    }
+
+    res.status(200).json(agendamento);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao buscar agendamento.' });
+  }
+};

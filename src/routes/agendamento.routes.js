@@ -243,4 +243,78 @@ router.put('/:agendamentoId/cancelar', autenticar, agendamentoController.cancela
  */
 router.patch('/:id/status', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), agendamentoController.atualizarStatus);
 
+/**
+ * @swagger
+ * /agendamentos:
+ *   get:
+ *     summary: Listar todos os agendamentos
+ *     tags: [Agendamentos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de agendamentos retornada com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   cliente:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       nome:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                   barbeiro:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       nome:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                   servico:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       nome:
+ *                         type: string
+ *                       preco:
+ *                         type: number
+ *                       duracao:
+ *                         type: number
+ *                   horario:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       data:
+ *                         type: string
+ *                       horaInicio:
+ *                         type: string
+ *                       horaFim:
+ *                         type: string
+ *                       isDisponivel:
+ *                         type: boolean
+ *                   status:
+ *                     type: string
+ *                     enum: [AGENDADO, CANCELADO, CONCLUIDO]
+ *                   criadoEm:
+ *                     type: string
+ *                     format: date-time
+ *       500:
+ *         description: Erro ao buscar agendamentos.
+ */
+router.get('/', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), agendamentoController.listarAgendamentos);
+router.get('/:id', autenticar,verificarPermissao(['BARBEIRO', 'ADMIN']), agendamentoController.buscarAgendamentoPorId);
+
 module.exports = router;
