@@ -65,6 +65,6 @@ const { autenticar, verificarPermissao } = require('../middlewares/auth.middlewa
  *             example:
  *               message: "Erro ao carregar painel admin."
  */
-router.get('/painel', autenticar, verificarPermissao(['ADMIN']), adminController.painelAdmin);
+router.get('/painel', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), adminController.painelAdmin);
 
 module.exports = router;
