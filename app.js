@@ -23,6 +23,7 @@ app.use(helmet());
 app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://sandbox-admin-control-jwtsh.vercel.app",
   "https://admin-control-jwtsh.vercel.app",
   "http://localhost:3000" // para desenvolvimento
 ];
