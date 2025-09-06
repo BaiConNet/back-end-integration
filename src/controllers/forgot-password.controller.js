@@ -21,7 +21,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpire = resetTokenExpire;
     await user.save();
 
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetUrl = `https://admin-control-jwtsh.vercel.app/reset-password/${resetToken}`;
 
     // enviar email
     const transporter = nodemailer.createTransport({
