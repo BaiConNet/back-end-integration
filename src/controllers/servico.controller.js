@@ -25,7 +25,6 @@ exports.criarServico = async (req, res) => {
 // Listar todos os serviços
 exports.listarServicos = async (req, res) => {
   try {
-    //const { usuarioId } = req.params;
     
     const servicos = await Servico.find({ usuario: req.user._id });
     if (!servicos.length) {

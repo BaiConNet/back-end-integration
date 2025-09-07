@@ -1,6 +1,6 @@
 const Bloqueio = require('../models/bloqueio.model');
 const User = require('../models/user.model');
-const Schedule = require('../models/schedule.model'); // importa o Schedule também
+const Schedule = require('../models/schedule.model');
 
 // Criar um bloqueio
 exports.criarBloqueio = async (req, res) => {
