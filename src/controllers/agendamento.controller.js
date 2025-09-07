@@ -109,6 +109,16 @@ exports.listarAgendamentos = async (req, res) => {
       filtro.barbeiro = req.user._id;
     }
 
+    if (req.query.data) {
+      const dataInicio = new Date(req.query.data);
+      dataInicio.setHours(0, 0, 0, 0);
+      const dataFim = new Date(req.query.data);
+      dataFim.setHours(23, 59, 59, 999);
+
+      filtro['horario.data'] = { $gte: dataInicio, $lte: dataFim };
+    }
+
+
     const agendamentos = await Agendamento.find(filtro)
       .populate('cliente', 'nome email')
       .populate('barbeiro', 'nome email')
