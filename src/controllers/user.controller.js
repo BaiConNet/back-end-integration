@@ -69,7 +69,7 @@ exports.getUser = async (req, res) => {
 
     let user;
     if (id) {
-      user = await User.findById(id).select('-senha'); // não retorna senha
+      user = await User.findById(id).select('-senha');
     } else if (email) {
       user = await User.findOne({ email }).select('-senha');
     } else {
@@ -89,7 +89,7 @@ exports.getUser = async (req, res) => {
 
 exports.getMe = async (req, res) => {
   try {
-    const userId = req.user.id; // vem do token decodificado
+    const userId = req.user.id;
     const user = await User.findById(userId).select('-senha');
     res.json(user);
   } catch (err) {
