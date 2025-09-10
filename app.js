@@ -18,6 +18,7 @@ const app = express();
 
 // Middleware
 app.use(helmet());
+
 app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
