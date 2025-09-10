@@ -42,6 +42,8 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
+app.options('*', cors());
+
 // Conexão com banco de dados
 dotenv.config();
 const conectarDB = require('./config/db');
