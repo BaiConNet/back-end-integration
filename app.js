@@ -18,6 +18,7 @@ const app = express();
 
 // Middleware
 app.use(helmet());
+
 app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
@@ -40,6 +41,8 @@ app.use(cors({
   preflightContinue: false,
   optionsSuccessStatus: 204
 }));
+
+app.options('*', cors());
 
 // Conexão com banco de dados
 dotenv.config();
