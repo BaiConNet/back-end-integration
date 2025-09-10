@@ -103,38 +103,34 @@ exports.atualizarStatus = async (req, res) => {
 // Listar agendamentos
 exports.listarAgendamentos = async (req, res) => {
   try {
-    const filtro = {};
+    let filtro = {};
 
     if (req.user.role === 'BARBEIRO') {
       filtro.barbeiro = req.user._id;
     }
 
-    // Se passou a data no query
-    let dataFilter = {};
     if (req.query.data) {
-      const data = new Date(req.query.data);
-      data.setHours(0, 0, 0, 0);
-      const dataFim = new Date(req.query.data);
-      dataFim.setHours(23, 59, 59, 999);
+      const filtroData = new Date(req.query.data);
+      filtroData.setHours(0, 0, 0, 0);
+      const filtroDataFim = new Date(req.query.data);
+      filtroDataFim.setHours(23, 59, 59, 999);
 
-      dataFilter = { data: { $gte: data, $lte: dataFim } };
+      const horariosIds = await Schedule.find({
+        data: { $gte: filtroData, $lte: filtroDataFim }
+      }).distinct('_id');
+
+      filtro.horario = { $in: horariosIds };
     }
 
     const agendamentos = await Agendamento.find(filtro)
       .populate('cliente', 'nome email')
       .populate('barbeiro', 'nome email')
       .populate('servico', 'nome preco duracao')
-      .populate({
-        path: 'horario',
-        match: dataFilter // aqui aplicamos o filtro de data
-      });
+      .populate('horario');
 
-    // Remover agendamentos cujo horario não bateu com o filtro
-    const agendamentosFiltrados = agendamentos.filter(a => a.horario);
-
-    res.status(200).json(agendamentosFiltrados);
+    res.status(200).json(agendamentos);
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao listar agendamentos:', error);
     res.status(500).json({ message: 'Erro ao listar agendamentos.' });
   }
 };

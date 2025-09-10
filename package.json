@@ -4,13 +4,20 @@
   "description": "API para integração backend com autenticação, MongoDB e Swagger",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "start": "cross-env NODE_ENV=production node app.js",
+    "dev": "cross-env NODE_ENV=sandbox nodemon app.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest --runInBand"
   },
-  "keywords": ["api", "express", "mongodb", "swagger", "jwt", "backend"],
+  "keywords": [
+    "api",
+    "express",
+    "mongodb",
+    "swagger",
+    "jwt",
+    "backend"
+  ],
   "author": "Seu Nome <jhonysds2@gmail.com, weskerdev95@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -28,10 +35,11 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9",
+    "cross-env": "^10.0.0",
     "eslint": "^9.14.0",
-    "prettier": "^3.3.3",
     "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.3.3",
     "supertest": "^7.0.0"
   },
   "engines": {
