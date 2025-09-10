@@ -4,7 +4,6 @@ const helmet = require('helmet');
 const cors = require('cors');
 const { swaggerUi, swaggerSpec } = require('./swagger.config');
 
-const conectarDB = require('./config/db');
 const userRoutes = require('./src/routes/user.routes');
 const servicoRoutes = require('./src/routes/servico.routes');
 const bloqueioRoutes = require('./src/routes/bloqueio.routes');
@@ -14,7 +13,6 @@ const scheduleRoutes = require('./src/routes/schedule.routes');
 const forgotRoutes = require('./src/routes/forgot-password.routes')
 const healthRoutes = require('./src/routes/health.routes');
 
-dotenv.config();
 
 const app = express();
 
@@ -41,6 +39,8 @@ app.use(cors({
 }));
 
 // Conexão com banco de dados
+dotenv.config();
+const conectarDB = require('./config/db');
 conectarDB();
 
 // Rotas

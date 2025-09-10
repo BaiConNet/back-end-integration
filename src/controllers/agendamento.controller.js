@@ -103,19 +103,23 @@ exports.atualizarStatus = async (req, res) => {
 // Listar agendamentos
 exports.listarAgendamentos = async (req, res) => {
   try {
-    const filtro = {};
+    let filtro = {};
 
     if (req.user.role === 'BARBEIRO') {
       filtro.barbeiro = req.user._id;
     }
 
     if (req.query.data) {
-      const data = new Date(req.query.data);
-      data.setHours(0, 0, 0, 0);
-      const dataFim = new Date(req.query.data);
-      dataFim.setHours(23, 59, 59, 999);
+      const filtroData = new Date(req.query.data);
+      filtroData.setHours(0, 0, 0, 0);
+      const filtroDataFim = new Date(req.query.data);
+      filtroDataFim.setHours(23, 59, 59, 999);
 
-      filtro.horario = { $gte: data, $lte: dataFim };
+      const horariosIds = await Schedule.find({
+        data: { $gte: filtroData, $lte: filtroDataFim }
+      }).distinct('_id');
+
+      filtro.horario = { $in: horariosIds };
     }
 
     const agendamentos = await Agendamento.find(filtro)
@@ -126,7 +130,7 @@ exports.listarAgendamentos = async (req, res) => {
 
     res.status(200).json(agendamentos);
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao listar agendamentos:', error);
     res.status(500).json({ message: 'Erro ao listar agendamentos.' });
   }
 };
