@@ -30,9 +30,7 @@ exports.register = async (req, res) => {
       confirmationToken: token,
     });
 
-    const urlBase = process.env.NODE_ENV === "sandbox"
-    ? process.env.FRONTEND_URL_SANDBOX
-    : process.env.FRONTEND_URL_PROD;
+    const urlBase = process.env.FRONTEND_URL;
 
     await enviarEmailConfirmacao(email, token, urlBase);
 
