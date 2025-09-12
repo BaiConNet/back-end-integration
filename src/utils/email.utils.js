@@ -25,7 +25,12 @@ export async function enviarEmailConfirmacao(email, token, urlBase) {
     subject: 'Confirme seu cadastro',
     html: `
       <p>Olá! Clique no link abaixo para confirmar seu cadastro:</p>
-      <a href="${urlConfirmacao}">Confirmar cadastro</a>
+      <a href="${urlConfirmacao}" target="_blank" style="color:#1a73e8; font-weight:bold;">
+        Confirmar cadastro
+      </a>
+      <br /><br />
+      <p>Ou copie e cole no navegador:</p>
+      <p style="word-break: break-all;">${urlConfirmacao}</p>
     `,
   });
 }
