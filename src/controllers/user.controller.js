@@ -20,7 +20,7 @@ exports.register = async (req, res) => {
     const token = gerarToken();
     const hash = await bcrypt.hash(senha, 10);
 
-    const novoUser = new User.create({
+    const novoUser = await User.create({
       nome,
       telefone,
       email,
