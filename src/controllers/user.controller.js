@@ -48,17 +48,21 @@ exports.confirmEmail = async (req, res) => {
   try {
     const { token } = req.query;
 
+    if (!token) {
+      return res.status(400).json({ message: "Token não fornecido." });
+    }
+
     const user = await User.findOne({ confirmationToken: token });
     if (!user) return res.status(400).json({ message: 'Token inválido ou expirado' });
 
     user.emailConfirmed = true;
-    user.confirmationToken = undefined; // remove o token
+    user.confirmationToken = null;
     await user.save();
 
-    res.status(200).json({ message: 'Email confirmado com sucesso!' });
-  } catch (err) {
-    console.error('Erro ao confirmar email:', err);
-    res.status(500).json({ message: 'Erro ao confirmar email' });
+    return res.status(200).json({ message: "Email confirmado com sucesso!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro no servidor." });
   }
 };
 
