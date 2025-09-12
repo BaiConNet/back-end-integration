@@ -1,32 +1,31 @@
-const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
-dotenv.config();
-
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: false, // true para porta 465, false para 587
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-async function enviarEmail({ to, subject, html }) {
-  const mailOptions = {
-    from: `"Bairro App" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  };
-
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email enviado:', info.messageId);
-  } catch (error) {
-    console.error('❌ Erro ao enviar e-mail:', error);
-  }
+// Gera token aleatório
+export function gerarToken() {
+  return crypto.randomBytes(32).toString('hex');
 }
 
-module.exports = { enviarEmail };
+// Envia email de confirmação
+export async function enviarEmailConfirmacao(email, token, urlBase) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const urlConfirmacao = `${urlBase}/confirm-email?token=${token}`;
+
+  await transporter.sendMail({
+    from: '"Connect Admin JWT" <noreply@barber.com>',
+    to: email,
+    subject: 'Confirme seu cadastro',
+    html: `
+      <p>Olá! Clique no link abaixo para confirmar seu cadastro:</p>
+      <a href="${urlConfirmacao}">Confirmar cadastro</a>
+    `,
+  });
+}
