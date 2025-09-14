@@ -3,7 +3,11 @@ const Servico = require('../models/servico.model');
 // Criar um novo serviço
 exports.criarServico = async (req, res) => {
   try {
-    const { nome, duracao, preco } = req.body;
+    const { nome, duracao, preco, categoria } = req.body;
+
+    if (!categoria) {
+      return res.status(400).json({ message: 'Categoria é obrigatória.' });
+    }
 
     // Verificar se o serviço já existe
     const servicoExistente = await Servico.findOne({ nome });
@@ -12,9 +16,10 @@ exports.criarServico = async (req, res) => {
     }
 
     // Criar o novo serviço
-    const novoServico = new Servico({ nome, duracao, preco, usuario: req.user._id });
+    const novoServico = new Servico({ nome, duracao, preco, categoria, usuario: req.user._id });
     await novoServico.save();
     const servicoPopulado = await Servico.findById(novoServico._id).populate('usuario', 'nome email role');
+    
     res.status(201).json({ message: 'Serviço criado com sucesso!', novoServico: servicoPopulado });
   } catch (error) {
     console.error(error);
@@ -42,7 +47,7 @@ exports.listarServicos = async (req, res) => {
 exports.editarServico = async (req, res) => {
   try {
     const { servicoId } = req.params;
-    const { nome, duracao, preco } = req.body;
+    const { nome, duracao, preco, categoria } = req.body;
 
     const servico = await Servico.findById(servicoId);
     if (!servico) {
@@ -52,6 +57,7 @@ exports.editarServico = async (req, res) => {
     servico.nome = nome || servico.nome;
     servico.duracao = duracao || servico.duracao;
     servico.preco = preco || servico.preco;
+    servico.categoria = categoria || servico.categoria;
 
     await servico.save();
 

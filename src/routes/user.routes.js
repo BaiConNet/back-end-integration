@@ -167,4 +167,5 @@ router.get('/search', autenticar, verificarPermissao(['ADMIN']), userController.
 
 router.get('/me', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), userController.getMe);
 
+router.get('/confirm-email', userController.confirmEmail);
 module.exports = router;
