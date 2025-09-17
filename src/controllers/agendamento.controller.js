@@ -10,6 +10,22 @@ exports.criarAgendamento = async (req, res) => {
   try {
     const { cliente, barbeiro, horarioId, servico } = req.body;
 
+    // Verifica se cliente e barbeiro existem e têm roles corretas
+    const clienteExistente = await User.findById(cliente);
+    const barbeiroExistente = await User.findById(barbeiro);
+
+    if (!clienteExistente || clienteExistente.role !== 'CLIENTE') {
+      return res.status(400).json({ message: 'Cliente inválido.' });
+    }
+
+    if (!barbeiroExistente || barbeiroExistente.role !== 'BARBEIRO') {
+      return res.status(400).json({ message: 'Barbeiro inválido.' });
+    }
+
+    if (cliente === barbeiro) {
+      return res.status(400).json({ message: 'Cliente e barbeiro não podem ser a mesma pessoa.' });
+    }
+
     const horario = await Schedule.findById(horarioId);
     if (!horario || !horario.isDisponivel) {
       return res.status(400).json({ message: 'Horário não disponível.' });
