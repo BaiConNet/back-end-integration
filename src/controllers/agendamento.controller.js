@@ -1,4 +1,5 @@
 const Agendamento = require('../models/agendamento.model');
+const User = require('../models/user.model');
 const Schedule = require('../models/schedule.model');
 const Bloqueio = require('../models/bloqueio.model');
 const Servico = require('../models/servico.model');
