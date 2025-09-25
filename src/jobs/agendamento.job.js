@@ -29,11 +29,6 @@ cron.schedule('*/5 * * * *', async () => {
         console.log(`✅ Agendamento ${agendamento._id} concluído automaticamente`);
       }
     }
-
-    const hoje = new Date();
-    hoje.setUTCHours(0, 0, 0, 0);
-    await Schedule.deleteMany({ data: { $lt: hoje } });
-    console.log('Horários antigos excluídos');
   } catch (err) {
     console.error('Erro no job de atualização automática:', err);
   }
