@@ -13,13 +13,17 @@ cron.schedule('*/5 * * * *', async () => {
     for (const agendamento of agendamentos) {
       if (!agendamento.horario) continue; // pular se horário não existir
 
+      const [horaInicio, minutoInicio] = agendamento.horario.horaInicio.split(':');
+      const horaInicioObj = new Date(agendamento.horario.data);
+      horaInicioObj.setHours(parseInt(horaInicio), parseInt(minutoInicio), 0, 0);
+
       // Criar Date do horário final corretamente
-      const [hora, minuto] = agendamento.horario.horaFim.split(':');
+      const [horaFim, minutoFim] = agendamento.horario.horaFim.split(':');
       const horaFimObj = new Date(agendamento.horario.data);
-      horaFimObj.setHours(parseInt(hora), parseInt(minuto), 0, 0);
+      horaFimObj.setHours(parseInt(horaFim), parseInt(minutoFim), 0, 0);
 
       // Comparar com horário atual
-      if (horaFimObj <= agora) {
+      if (agora >= horaFimObj && agora >= horaInicioObj) {
         agendamento.status = 'CONCLUIDO';
         await agendamento.save();
         console.log(`✅ Agendamento ${agendamento._id} concluído automaticamente`);
