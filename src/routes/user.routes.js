@@ -1,7 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { autenticar, verificarPermissao } = require('../middlewares/auth.middleware');
-const userController = require('../controllers/user.controller');
+const {
+  autenticar,
+  verificarPermissao,
+} = require("../middlewares/auth.middleware");
+const userController = require("../controllers/user.controller");
 
 /**
  * @swagger
@@ -30,9 +33,9 @@ const userController = require('../controllers/user.controller');
  *           example: "123456"
  *         role:
  *           type: string
- *           enum: [CLIENTE, DONO, ADMIN]
+ *           enum: [CLIENTE, BARBEIRO, ADMIN]
  *           example: CLIENTE
- * 
+ *
  *     UserResponse:
  *       type: object
  *       properties:
@@ -51,11 +54,14 @@ const userController = require('../controllers/user.controller');
  *         role:
  *           type: string
  *           example: CLIENTE
+ *         emailConfirmed:
+ *           type: boolean
+ *           example: true
  *         criadoEm:
  *           type: string
  *           format: date-time
  *           example: 2025-08-13T18:20:00.000Z
- * 
+ *
  *     LoginRequest:
  *       type: object
  *       required:
@@ -68,16 +74,16 @@ const userController = require('../controllers/user.controller');
  *         senha:
  *           type: string
  *           example: "123456"
- * 
+ *
  *     LoginResponse:
  *       type: object
  *       properties:
  *         token:
  *           type: string
  *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *         user:
+ *           $ref: '#/components/schemas/UserResponse'
  */
-
-router.post('/register', userController.register);
 
 /**
  * @swagger
@@ -97,14 +103,17 @@ router.post('/register', userController.register);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UserResponse'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Cadastro realizado! Verifique seu email para confirmar.
  *       400:
- *         description: Erro de validação
+ *         description: Erro de validação ou email já cadastrado
  *       500:
- *         description: Erro interno
+ *         description: Erro interno do servidor
  */
-
-router.post('/login', userController.login);
+router.post("/register", userController.register);
 
 /**
  * @swagger
@@ -125,13 +134,14 @@ router.post('/login', userController.login);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/LoginResponse'
- *       401:
- *         description: Credenciais inválidas
+ *       400:
+ *         description: Email ou senha inválidos
+ *       403:
+ *         description: Email não confirmado
  *       500:
- *         description: Erro interno
+ *         description: Erro interno do servidor
  */
-
-router.get('/search', autenticar, verificarPermissao(['ADMIN']), userController.getUser);
+router.post("/login", userController.login);
 
 /**
  * @swagger
@@ -139,6 +149,8 @@ router.get('/search', autenticar, verificarPermissao(['ADMIN']), userController.
  *   get:
  *     summary: Buscar usuário por ID ou email
  *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: id
@@ -164,8 +176,69 @@ router.get('/search', autenticar, verificarPermissao(['ADMIN']), userController.
  *       500:
  *         description: Erro interno
  */
+router.get(
+  "/search",
+  autenticar,
+  verificarPermissao(["ADMIN"]),
+  userController.getUser
+);
 
-router.get('/me', autenticar, verificarPermissao(['BARBEIRO', 'ADMIN']), userController.getMe);
+/**
+ * @swagger
+ * /user/me:
+ *   get:
+ *     summary: Retorna perfil do usuário autenticado
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil do usuário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserResponse'
+ *       401:
+ *         description: Não autorizado
+ *       500:
+ *         description: Erro interno
+ */
+router.get(
+  "/me",
+  autenticar,
+  verificarPermissao(["BARBEIRO", "ADMIN"]),
+  userController.getMe
+);
 
-router.get('/confirm-email', userController.confirmEmail);
+/**
+ * @swagger
+ * /user/confirm-email:
+ *   get:
+ *     summary: Confirmar email do usuário
+ *     tags: [Usuários]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token de confirmação enviado por email
+ *     responses:
+ *       200:
+ *         description: Email confirmado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Email confirmado com sucesso!
+ *       400:
+ *         description: Token inválido ou não fornecido
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.get("/confirm-email", userController.confirmEmail);
+
 module.exports = router;
