@@ -36,7 +36,7 @@ exports.criarHorario = async (req, res) => {
 exports.listarHorarios = async (req, res) => {
   try {
     const barbeiroId = req.params.barbeiroId;
-    const horarios = await Schedule.find({ barbeiro: barbeiroId, isDisponivel: true });
+    const horarios = await Schedule.find({ barbeiro: barbeiroId }).sort({ data: 1, horaInicio: 1 });
     res.status(200).json(horarios);
   } catch (error) {
     console.error(error);
