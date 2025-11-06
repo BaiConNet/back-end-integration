@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import crypto from 'crypto';
 
 // Gera token aleatório
@@ -6,22 +6,13 @@ export function gerarToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 // Envia email de confirmação
 export async function enviarEmailConfirmacao(email, token, urlBase) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    connectionTimeout: 10000
-  });
-
   const urlConfirmacao = `${urlBase}/confirm-email?token=${token}`;
 
-  await transporter.sendMail({
+  await resend.emails.send({
     from: '"Connect Admin JWT" <noreply@barber.com>',
     to: email,
     subject: 'Confirme seu cadastro',
