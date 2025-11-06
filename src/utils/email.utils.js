@@ -13,7 +13,7 @@ export async function enviarEmailConfirmacao(email, token, urlBase) {
   const urlConfirmacao = `${urlBase}/confirm-email?token=${token}`;
 
   await resend.emails.send({
-    from: '"Connect Admin JWT" <noreply@barber.com>',
+    from: '"Connect Admin JWT" <noreply@resend.dev>',
     to: email,
     subject: 'Confirme seu cadastro',
     html: `
