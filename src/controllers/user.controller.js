@@ -144,3 +144,42 @@ exports.getMe = async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar perfil" });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const { id } = req.params;
+
+    if (id && id !== userId) {
+      return res.status(403).json({ error: "Acesso negado. Você só pode atualizar seu próprio perfil." });
+    }
+
+    const { nome, telefone } = req.body;
+
+    if (!nome && !telefone) {
+      return res.status(400).json({ error: "Informe pelo menos um campo para atualizar." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    if (nome) user.nome = nome;
+    if (telefone) user.telefone = telefone;
+
+    await user.save();
+
+    const usuarioAtualizado = user.toObject();
+    delete usuarioAtualizado.senha;
+    
+    res.status(200).json({
+      message: "Usuário atualizado com sucesso!",
+      user: usuarioAtualizado,
+    });
+
+  } catch (err) {
+    console.error("Erro ao atualizar usuário:", err);
+    res.status(500).json({ error: "Erro ao atualizar usuário" });
+  }
+};

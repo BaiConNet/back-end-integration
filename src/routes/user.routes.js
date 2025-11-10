@@ -238,4 +238,6 @@ router.get(
  */
 router.get("/confirm-email", userController.confirmEmail);
 
+router.put("/usuario/:id", autenticar, verificarPermissao(["CLIENTE"]), userController.updateUser);
+
 module.exports = router;
