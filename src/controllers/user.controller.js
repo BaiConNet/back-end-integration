@@ -183,3 +183,26 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: "Erro ao atualizar usuário" });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const { id } = req.params;
+
+    if (id && id !== userId) {
+      return res.status(403).json({ error: "Acesso negado. Você só pode deletar seu próprio perfil." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    await User.deleteOne({ _id: userId });
+
+    res.status(200).json({ message: "Usuário deletado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao deletar usuário:", err);
+    res.status(500).json({ error: "Erro ao deletar usuário" });
+  }
+};
