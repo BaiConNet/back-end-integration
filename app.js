@@ -7,7 +7,6 @@ const cors = require('cors');
 const { swaggerUi, swaggerSpec } = require('./swagger.config');
 
 // Rotas
-const testEmailRoutes = require('./src/routes/testeEmail.routes');
 const userRoutes = require('./src/routes/user.routes');
 const servicoRoutes = require('./src/routes/servico.routes');
 const bloqueioRoutes = require('./src/routes/bloqueio.routes');
@@ -66,7 +65,6 @@ app.use('/schedule', scheduleRoutes);
 app.use('/admin', adminRoutes);
 app.use('/', forgotRoutes);
 app.use('/health', healthRoutes);
-app.use('/api', testEmailRoutes);
 app.use('/notificacoes', notificacao);
 
 // Swagger

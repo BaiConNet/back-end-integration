@@ -238,4 +238,8 @@ router.get(
  */
 router.get("/confirm-email", userController.confirmEmail);
 
+router.put("/:id", autenticar, verificarPermissao(["CLIENTE"]), userController.updateUser);
+
+router.delete("/delete/:id", autenticar, verificarPermissao(["CLIENTE"]), userController.deleteUser);
+
 module.exports = router;

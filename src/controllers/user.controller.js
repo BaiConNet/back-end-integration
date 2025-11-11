@@ -1,20 +1,20 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
-const { gerarToken, enviarEmailConfirmacao } = require('../utils/email.utils');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user.model");
+const { gerarToken, enviarEmailConfirmacao } = require("../utils/email.utils");
 
 exports.register = async (req, res) => {
   try {
     const { nome, email, telefone, senha, role } = req.body;
 
     if (!nome || !telefone || !email || !senha || !role) {
-      return res.status(400).json({ error: 'Preencha todos os campos' });
+      return res.status(400).json({ error: "Preencha todos os campos" });
     }
 
     // Verifica se já existe usuário
     const userExistente = await User.findOne({ email });
     if (userExistente) {
-      return res.status(400).json({ error: 'E-mail já cadastrado' });
+      return res.status(400).json({ error: "E-mail já cadastrado" });
     }
 
     const token = gerarToken();
@@ -35,12 +35,11 @@ exports.register = async (req, res) => {
     await enviarEmailConfirmacao(email, token, urlBase);
 
     res.status(201).json({
-      message: 'Cadastro realizado! Verifique seu email para confirmar.',
+      message: "Cadastro realizado! Verifique seu email para confirmar.",
     });
-
   } catch (err) {
-    console.error('Erro no cadastro:', err);
-    res.status(500).json({ error: 'Erro no cadastro' });
+    console.error("Erro no cadastro:", err);
+    res.status(500).json({ error: "Erro no cadastro" });
   }
 };
 
@@ -53,7 +52,8 @@ exports.confirmEmail = async (req, res) => {
     }
 
     const user = await User.findOne({ confirmationToken: token });
-    if (!user) return res.status(400).json({ message: 'Token inválido ou expirado' });
+    if (!user)
+      return res.status(400).json({ message: "Token inválido ou expirado" });
 
     user.emailConfirmed = true;
     user.confirmationToken = null;
@@ -72,29 +72,40 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Email ou senha inválidos' });
+      return res.status(400).json({ message: "Email ou senha inválidos" });
     }
 
     // Bloquear login se email não confirmado
     if (!user.emailConfirmed) {
-      return res.status(403).json({ message: 'Confirme seu email antes de logar' });
+      return res
+        .status(403)
+        .json({ message: "Confirme seu email antes de logar" });
     }
 
     const senhaValida = await bcrypt.compare(senha, user.senha);
     if (!senhaValida) {
-      return res.status(400).json({ message: 'Email ou senha inválidos' });
+      return res.status(400).json({ message: "Email ou senha inválidos" });
     }
 
     const token = jwt.sign(
       { _id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: "1d" }
     );
 
-    res.json({ token, user: { _id: user._id, nome: user.nome, email: user.email, telefone: user.telefone, role: user.role } });
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        nome: user.nome,
+        email: user.email,
+        telefone: user.telefone,
+        role: user.role,
+      },
+    });
   } catch (err) {
-    console.error('Erro no login:', err);
-    res.status(500).json({ error: 'Erro no login' });
+    console.error("Erro no login:", err);
+    res.status(500).json({ error: "Erro no login" });
   }
 };
 
@@ -104,30 +115,94 @@ exports.getUser = async (req, res) => {
 
     let user;
     if (id) {
-      user = await User.findById(id).select('-senha');
+      user = await User.findById(id).select("-senha");
     } else if (email) {
-      user = await User.findOne({ email }).select('-senha');
+      user = await User.findOne({ email }).select("-senha");
     } else {
-      return res.status(400).json({ error: 'Informe id ou email para buscar o usuário' });
+      return res
+        .status(400)
+        .json({ error: "Informe id ou email para buscar o usuário" });
     }
 
     if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
+      return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
     res.json(user);
   } catch (err) {
-    console.error('Erro ao buscar usuário:', err);
-    res.status(500).json({ error: 'Erro ao buscar usuário' });
+    console.error("Erro ao buscar usuário:", err);
+    res.status(500).json({ error: "Erro ao buscar usuário" });
   }
 };
 
 exports.getMe = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await User.findById(userId).select('-senha');
+    const user = await User.findById(userId).select("-senha");
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar perfil' });
+    res.status(500).json({ error: "Erro ao buscar perfil" });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const { id } = req.params;
+
+    if (id && id !== userId) {
+      return res.status(403).json({ error: "Acesso negado. Você só pode atualizar seu próprio perfil." });
+    }
+
+    const { nome, telefone } = req.body;
+
+    if (!nome && !telefone) {
+      return res.status(400).json({ error: "Informe pelo menos um campo para atualizar." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    if (nome) user.nome = nome;
+    if (telefone) user.telefone = telefone;
+
+    await user.save();
+
+    const usuarioAtualizado = user.toObject();
+    delete usuarioAtualizado.senha;
+    
+    res.status(200).json({
+      message: "Usuário atualizado com sucesso!",
+      user: usuarioAtualizado,
+    });
+
+  } catch (err) {
+    console.error("Erro ao atualizar usuário:", err);
+    res.status(500).json({ error: "Erro ao atualizar usuário" });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const { id } = req.params;
+
+    if (id && id !== userId) {
+      return res.status(403).json({ error: "Acesso negado. Você só pode deletar seu próprio perfil." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
+    }
+
+    await User.deleteOne({ _id: userId });
+
+    res.status(200).json({ message: "Usuário deletado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao deletar usuário:", err);
+    res.status(500).json({ error: "Erro ao deletar usuário" });
   }
 };
